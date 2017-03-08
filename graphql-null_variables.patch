@@ -1,0 +1,20 @@
+diff -Naur graphql_orig/src/Controller/RequestController.php graphql/src/Controller/RequestController.php
+--- graphql_orig/src/Controller/RequestController.php	2017-03-08 09:07:30.996319909 +0100
++++ graphql/src/Controller/RequestController.php	2017-03-07 23:24:45.754075000 +0100
+@@ -94,7 +94,15 @@
+     }
+ 
+     $schema = $this->schemaLoader->loadSchema($this->languageManager->getCurrentLanguage());
+-    $variables = $variables ? (array) json_decode($variables) : NULL;
++    if (is_a($variables, 'stdClass')) {
++      $variables = get_object_vars($variables);
++    }
++    elseif (is_array($variables)) {
++      // Do nothing.
++    }
++    else {
++      $variables = $variables ? (array) json_decode($variables) : NULL;
++    }
+     $result = $this->graphql->execute($schema, $query, NULL, $variables, $operation);
+ 
+     $response = new JsonResponse($result);
